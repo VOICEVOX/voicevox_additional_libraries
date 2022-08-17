@@ -18,17 +18,18 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            assert_name: CUDA-windows-x64
-            cuda_version: 11.6
+            artifact_name: windows-x64
           - os: ubuntu-latest
-            assert_name: CUDA-linux-x64
+            artifact_name: linux-x64
+    env:
+      ASSET_NAME: CUDA-${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - name: Prepare directory
         shell: bash
         run: |
-          mkdir -p artifact/${{ matrix.assert_name }}
+          mkdir -p artifact/${{ env.ASSET_NAME }}
       - name: Organize cuda lib artifact
         uses: ./.github/actions/download-cuda-libraries
         with:
@@ -43,9 +44,9 @@ jobs:
         include:
           - platform: x64-win
             artifact_name: windows-x64
-            directml_version: 1.9.0
     env:
       ASSET_NAME: DirectML-${{ matrix.artifact_name }}
+      DIRECTML_VERSION: ${{ matrix.directml_version || '1.9.0' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -57,12 +58,12 @@ jobs:
       - name: Download DirectML
         shell: bash
         run: |
-          directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ matrix.directml_version }}/microsoft.ai.directml.${{ matrix.directml_version }}.nupkg"
+          directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ env.DIRECTML_VERSION }}/microsoft.ai.directml.${{ env.DIRECTML_VERSION }}.nupkg"
           curl -sSLO $directml_link
       - name: Extract DirectML
         shell: bash
         run: |
-          unzip -d ext_directml microsoft.ai.directml.${{ matrix.directml_version }}.nupkg
+          unzip -d ext_directml microsoft.ai.directml.${{ env.DIRECTML_VERSION }}.nupkg
           cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
           cp -v "ext_directml/LICENSE.txt" "artifact/${{ env.ASSET_NAME }}/DirectML_LICENSE.txt"
       - name: Upload DirectML
