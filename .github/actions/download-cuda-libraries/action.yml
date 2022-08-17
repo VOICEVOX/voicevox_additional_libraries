@@ -34,7 +34,7 @@ runs:
       run: |
         set -eux
         mkdir -p download/cudnn_tmp
-        if [[ "${{ runner.os }}" = "Ubuntu" ]]; then
+        if [[ "${{ runner.os }}" = "Linux" ]]; then
           curl -L "${{ matrix.cudnn_download_url }}" > download/cudnn.tar.xz
           tar -Jxvf download/cudnn.tar.xz -C download/cudnn_tmp
           mkdir -p download/cudnn_tmp/bin
@@ -65,14 +65,14 @@ runs:
         set -eux
         CUDA_ROOT=$( echo "${{ steps.cuda-toolkit.outputs.CUDA_PATH }}" | tr '\\' '/' )
         mkdir -p download/cuda/bin
-        if [[ "${{ runner.os }}" = "Ubuntu" ]]; then
+        if [[ "${{ runner.os }}" = "Linux" ]]; then
           cp -v "$CUDA_ROOT/lib64/"*.so* download/cuda/bin/
         elif [[ "${{ runner.os }}" = "Windows" ]];then
           cp -v "$CUDA_ROOT/bin/"*.dll download/cuda/bin/
         fi
     - name: Extract Libraries for Windows
       shell: bash
-      if: contains(inputs.asset_name,'windows')
+      if: ${{ runner.os == 'Windows' }}
       run: |
         # CUDA
         ln -sf "$(pwd)/download/cuda/bin"/cublas64_*.dll "${{ inputs.extract_dir }}"
@@ -85,7 +85,7 @@ runs:
         ln -sf "$(pwd)/download/cudnn/bin"/cudnn_*_infer64*.dll "${{ inputs.extract_dir }}"
     - name: Extract Libraries for Linux
       shell: bash
-      if: contains(inputs.asset_name,'linux')
+      if: ${{ runner.os == 'Linux' }}
       run: |
         # CUDA
         ln -sf "$(pwd)/download/cuda/bin"/libcublas.so.* "${{ inputs.extract_dir }}"
