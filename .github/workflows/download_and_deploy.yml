@@ -24,6 +24,7 @@ jobs:
       DIRECTML_VERSION: 1.9.0
       ASSET_NAME: DirectML-${{ matrix.platform }}
     steps:
+      - uses: actions/checkout@v3
       - name: Prepare directory
         shell: bash
         run: |
