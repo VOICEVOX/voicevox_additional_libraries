@@ -1,0 +1,50 @@
+name: download and deploy
+on:
+  push:
+  pull_request:
+  release:
+    types:
+      - published
+env:
+  # releaseタグ名か、workflow_dispatchでのバージョン名か、DEBUGが入る
+  VERSION: ${{ github.event.release.tag_name || github.event.inputs.version || 'DEBUG' }}
+
+  # Raw character weights are not public.
+  # Skip uploading to GitHub Release on public repo.
+  SKIP_UPLOADING_RELEASE_ASSET: ${{ secrets.SKIP_UPLOADING_RELEASE_ASSET || '1' }}
+jobs:
+  download_and_deploy_directml:
+    strategy:
+      matrix:
+        include:
+          - platform: x64-win
+
+    runs-on: ubuntu-latest
+    env:
+      DIRECTML_VERSION: 1.9.0
+      ASSET_NAME: DirectML-${{ matrix.platform }}
+    steps:
+      - name: Prepare directory
+        shell: bash
+        run: |
+          mkdir -p artifact/${{ env.ASSET_NAME }}
+
+      - name: Download DirectML
+        shell: bash
+        run: |
+          directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ env.DIRECTML_VERSION }}/microsoft.ai.directml.${{ env.DIRECTML_VERSION }}.nupkg"
+          curl -sSLO $directml_link
+      - name: Extract DirectML
+        shell: bash
+        run: |
+          unzip -d ext_directml microsoft.ai.directml.${{ env.DIRECTML_VERSION }}.nupkg
+          cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
+          cp -v "ext_directml/LICENSE.txt" "artifact/${{ env.ASSET_NAME }}/DirectML_LICENSE.txt"
+      - name: Upload DirectML
+        if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
+        uses: ./.github/actions/upload-artifact
+        with:
+          artifact_dir: artifact
+          assert_name: ${{ env.ASSET_NAME }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ env.VERSION }}
