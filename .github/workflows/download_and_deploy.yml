@@ -13,8 +13,6 @@ env:
   # Skip uploading to GitHub Release on public repo.
   SKIP_UPLOADING_RELEASE_ASSET: ${{ secrets.SKIP_UPLOADING_RELEASE_ASSET || '1' }}
 jobs:
-  download_and_deploy_cuda:
-
   download_and_deploy_directml:
     strategy:
       matrix:
