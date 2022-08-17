@@ -40,6 +40,14 @@ jobs:
           asset_name: ${{ env.ASSET_NAME }}
           cuda_version: ${{ env.CUDA_VERSION }}
           extract_dir: artifact/${{ env.ASSET_NAME }}
+      - name: Upload CUDA
+        if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
+        uses: ./.github/actions/upload-artifact
+        with:
+          artifact_dir: artifact
+          assert_name: ${{ env.ASSET_NAME }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ env.VERSION }}
 
   download_and_deploy_directml:
     strategy:
