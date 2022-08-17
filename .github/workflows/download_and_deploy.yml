@@ -19,10 +19,13 @@ jobs:
         include:
           - os: windows-latest
             artifact_name: windows-x64
+            cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive.zip
           - os: ubuntu-latest
             artifact_name: linux-x64
+            cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive.tar.xz
     env:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
+      CUDA_VERSION: ${{ matrix.cuda_version || '11.6.0' }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -34,9 +37,9 @@ jobs:
         uses: ./.github/actions/download-cuda-libraries
         with:
           cudnn_download_url: ${{ matrix.cudnn_download_url }}
-          artifact_name: ${{ matrix.artifact_name }}
-          cuda_version: ${{ matrix.cuda_version }}
-          extract_dir: artifact/${{ env.CUDA_LIB_ASSET_NAME }}
+          asset_name: ${{ env.ASSET_NAME }}
+          cuda_version: ${{ env.CUDA_VERSION }}
+          extract_dir: artifact/${{ env.ASSET_NAME }}
 
   download_and_deploy_directml:
     strategy:

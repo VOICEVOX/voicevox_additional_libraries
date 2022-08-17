@@ -4,14 +4,11 @@ inputs:
   cudnn_download_url:
     description: cudaのダウンロードURL
     required: true
-  artifact_name:
-    description: artifactの名前
+  asset_name:
+    description: assetの名前
     required: true
   cuda_version:
     description: cudaのバージョン
-    required: true
-  cuda_lib_dir:
-    description: libraryは配置されているディレクトリ
     required: true
   extract_dir:
     description: 出力先のディレクトリ
@@ -23,27 +20,14 @@ runs:
       uses: actions/cache@v2
       id: cuda-library-cache
       with:
-        key: v1-cuda-library-cache-${{ inputs.artifact_name }}-${{ inputs.cuda_version }}
+        key: v1-cuda-library-cache-${{ inputs.asset_name }}-${{ inputs.cuda_version }}
         path: download/cuda
     - name: Prepare cuDNN cache
       uses: actions/cache@v2
       id: cudnn-library-cache
       with:
-        key: v1-cudnn-library-cache-${{ inputs.artifact_name }}-${{ inputs.cudnn_download_url }}
+        key: v1-cudnn-library-cache-${{ inputs.asset_name }}-${{ inputs.cudnn_download_url }}
         path: download/cudnn
-    - uses: Jimver/cuda-toolkit@v0.2.8
-      id: cuda-toolkit
-      with:
-        method: network
-        cuda: ${{ inputs.cuda_version }}
-    - name: Extract CUDA Library
-      if: steps.cuda-library-cache.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        set -eux
-        CUDA_ROOT=$( echo "${{ steps.cuda-toolkit.outputs.CUDA_PATH }}" | tr '\\' '/' )
-        mkdir -p download/cuda/bin
-        cp -v "$CUDA_ROOT/${{ inputs.cuda_lib_dir }}/"*.{so*,dll} download/cuda/bin/ || true
     - name: Extract CUDNN Library
       if: steps.cudnn-library-cache.outputs.cache-hit != 'true'
       shell: bash
@@ -67,9 +51,26 @@ runs:
         rm -f download/cudnn.*
         mkdir -p ${{ inputs.extract_dir }}
         cp -v docs/licenses/cuda/* "${{ inputs.extract_dir }}"
+    - uses: Jimver/cuda-toolkit@v0.2.8
+      id: cuda-toolkit
+      with:
+        method: network
+        cuda: ${{ inputs.cuda_version }}
+    - name: Extract CUDA Library
+      if: steps.cuda-library-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        set -eux
+        CUDA_ROOT=$( echo "${{ steps.cuda-toolkit.outputs.CUDA_PATH }}" | tr '\\' '/' )
+        mkdir -p download/cuda/bin
+        if [[ "${{ runner.os }}" = "Ubuntu" ]]; then
+          cp -v "$CUDA_ROOT/lib64/"*.so* download/cuda/bin/ || true
+        elif [[ "${{ runner.os }}" = "Windows" ]];then
+          cp -v "$CUDA_ROOT/bin/"*.dll download/cuda/bin/ || true
+        fi
     - name: Extract Libraries for Windows
       shell: bash
-      if: contains(inputs.artifact_name,'windows')
+      if: contains(inputs.asset_name,'windows')
       run: |
         # CUDA
         ln -sf "$(pwd)/download/cuda/bin"/cublas64_*.dll "${{ inputs.extract_dir }}"
@@ -82,7 +83,7 @@ runs:
         ln -sf "$(pwd)/download/cudnn/bin"/cudnn_*_infer64*.dll "${{ inputs.extract_dir }}"
     - name: Extract Libraries for Linux
       shell: bash
-      if: contains(inputs.artifact_name,'linux')
+      if: contains(inputs.asset_name,'linux')
       run: |
         # CUDA
         ln -sf "$(pwd)/download/cuda/bin"/libcublas.so.* "${{ inputs.extract_dir }}"
