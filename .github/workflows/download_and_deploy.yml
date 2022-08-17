@@ -18,25 +18,41 @@ jobs:
       matrix:
         include:
           - os: windows-latest
+            assert_name: CUDA-windows-x64
+            cuda_version: 11.6
           - os: ubuntu-latest
+            assert_name: CUDA-linux-x64
     runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v3
-
-  download_and_deploy_directml:
-    strategy:
-      matrix:
-        include:
-          - platform: x64-win
-            assert_name: DirectML-windows-x64
-            directml_version: 1.9.0
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Prepare directory
         shell: bash
         run: |
           mkdir -p artifact/${{ matrix.assert_name }}
+      - name: Organize cuda lib artifact
+        uses: ./.github/actions/download-cuda-libraries
+        with:
+          cudnn_download_url: ${{ matrix.cudnn_download_url }}
+          artifact_name: ${{ matrix.artifact_name }}
+          cuda_version: ${{ matrix.cuda_version }}
+          extract_dir: artifact/${{ env.CUDA_LIB_ASSET_NAME }}
+
+  download_and_deploy_directml:
+    strategy:
+      matrix:
+        include:
+          - platform: x64-win
+            artifact_name: windows-x64
+            directml_version: 1.9.0
+    env:
+      ASSET_NAME: DirectML-${{ matrix.artifact_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare directory
+        shell: bash
+        run: |
+          mkdir -p artifact/${{ env.ASSET_NAME }}
 
       - name: Download DirectML
         shell: bash
@@ -47,13 +63,13 @@ jobs:
         shell: bash
         run: |
           unzip -d ext_directml microsoft.ai.directml.${{ matrix.directml_version }}.nupkg
-          cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ matrix.assert_name }}"
-          cp -v "ext_directml/LICENSE.txt" "artifact/${{ matrix.assert_name }}/DirectML_LICENSE.txt"
+          cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
+          cp -v "ext_directml/LICENSE.txt" "artifact/${{ env.ASSET_NAME }}/DirectML_LICENSE.txt"
       - name: Upload DirectML
         if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
         uses: ./.github/actions/upload-artifact
         with:
           artifact_dir: artifact
-          assert_name: ${{ matrix.assert_name }}
+          assert_name: ${{ env.ASSET_NAME }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.VERSION }}
