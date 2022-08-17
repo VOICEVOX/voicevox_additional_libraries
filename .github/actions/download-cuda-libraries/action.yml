@@ -38,11 +38,13 @@ runs:
           curl -L "${{ matrix.cudnn_download_url }}" > download/cudnn.tar.xz
           tar -Jxvf download/cudnn.tar.xz -C download/cudnn_tmp
           mkdir -p download/cudnn_tmp/bin
+          # このディレクトリはcudnnのバージョンによって変わってしまうことがあるので注意すること
           mv -v download/cudnn_tmp/**/lib/* download/cudnn_tmp/bin
         elif [[ "${{ runner.os }}" = "Windows" ]];then
           curl -L "${{ matrix.cudnn_download_url }}" > download/cudnn.zip
           unzip download/cudnn.zip cudnn*/bin/*.dll -d download/cudnn_tmp
           mkdir -p ./download/cudnn_tmp/bin
+          # このディレクトリはcudnnのバージョンによって変わってしまうことがあるので注意すること
           mv -v ./download/cudnn_tmp/cudnn*/bin/* ./download/cudnn_tmp/bin
         fi
         mkdir -p download/cudnn/bin
@@ -64,9 +66,9 @@ runs:
         CUDA_ROOT=$( echo "${{ steps.cuda-toolkit.outputs.CUDA_PATH }}" | tr '\\' '/' )
         mkdir -p download/cuda/bin
         if [[ "${{ runner.os }}" = "Ubuntu" ]]; then
-          cp -v "$CUDA_ROOT/lib64/"*.so* download/cuda/bin/ || true
+          cp -v "$CUDA_ROOT/lib64/"*.so* download/cuda/bin/
         elif [[ "${{ runner.os }}" = "Windows" ]];then
-          cp -v "$CUDA_ROOT/bin/"*.dll download/cuda/bin/ || true
+          cp -v "$CUDA_ROOT/bin/"*.dll download/cuda/bin/
         fi
     - name: Extract Libraries for Windows
       shell: bash
