@@ -4,7 +4,7 @@ inputs:
   artifact_dir:
     description: 作業ディレクトリ
     required: true
-  assert_name:
+  asset_name:
     description: artifactの名前
     required: true
   repo_token:
@@ -17,20 +17,20 @@ runs:
   using: "composite"
   steps:
     - name: Archive artifact
-      if: (!contains(inputs.assert_name,'windows'))
+      if: ${{ runner.os != 'Windows' }}
       shell: bash
       run: |
         cd "${{ inputs.artifact_dir }}"
-        zip -r "../${{ inputs.assert_name }}.zip" "${{ inputs.assert_name }}"
+        zip -r "../${{ inputs.asset_name }}.zip" "${{ inputs.asset_name }}"
     - name: Archive artifact (Windows)
-      if: contains(inputs.assert_name, 'windows')
+      if: ${{ runner.os == 'Windows' }}
       shell: bash
       run: |
-        powershell Compress-Archive -Path "${{ inputs.artifact_dir }}/${{ inputs.assert_name }}" -DestinationPath "${{ inputs.assert_name }}.zip"
+        powershell Compress-Archive -Path "${{ inputs.artifact_dir }}/${{ inputs.asset_name }}" -DestinationPath "${{ inputs.asset_name }}.zip"
     - name: Upload to Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ inputs.repo_token }}
         prerelease: true
         tag: ${{ inputs.version }}
-        file: ${{ inputs.assert_name }}.zip
+        file: ${{ inputs.asset_name }}.zip

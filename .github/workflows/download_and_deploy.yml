@@ -45,7 +45,7 @@ jobs:
         uses: ./.github/actions/upload-artifact
         with:
           artifact_dir: artifact
-          assert_name: ${{ env.ASSET_NAME }}
+          asset_name: ${{ env.ASSET_NAME }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.VERSION }}
 
@@ -82,6 +82,6 @@ jobs:
         uses: ./.github/actions/upload-artifact
         with:
           artifact_dir: artifact
-          assert_name: ${{ env.ASSET_NAME }}
+          asset_name: ${{ env.ASSET_NAME }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.VERSION }}
