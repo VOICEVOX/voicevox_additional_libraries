@@ -13,21 +13,30 @@ env:
   # Skip uploading to GitHub Release on public repo.
   SKIP_UPLOADING_RELEASE_ASSET: ${{ secrets.SKIP_UPLOADING_RELEASE_ASSET || '1' }}
 jobs:
+  download_and_deploy_cuda:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+          - os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
   download_and_deploy_directml:
     strategy:
       matrix:
         include:
           - platform: x64-win
+            assert_name: DirectML-windows-x64
             directml_version: 1.9.0
     runs-on: ubuntu-latest
-    env:
-      ASSET_NAME: DirectML-${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
       - name: Prepare directory
         shell: bash
         run: |
-          mkdir -p artifact/${{ env.ASSET_NAME }}
+          mkdir -p artifact/${{ matrix.assert_name }}
 
       - name: Download DirectML
         shell: bash
@@ -38,13 +47,13 @@ jobs:
         shell: bash
         run: |
           unzip -d ext_directml microsoft.ai.directml.${{ matrix.directml_version }}.nupkg
-          cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
-          cp -v "ext_directml/LICENSE.txt" "artifact/${{ env.ASSET_NAME }}/DirectML_LICENSE.txt"
+          cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ matrix.assert_name }}"
+          cp -v "ext_directml/LICENSE.txt" "artifact/${{ matrix.assert_name }}/DirectML_LICENSE.txt"
       - name: Upload DirectML
         if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
         uses: ./.github/actions/upload-artifact
         with:
           artifact_dir: artifact
-          assert_name: ${{ env.ASSET_NAME }}
+          assert_name: ${{ matrix.assert_name }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.VERSION }}
