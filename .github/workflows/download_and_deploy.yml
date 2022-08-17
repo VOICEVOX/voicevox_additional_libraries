@@ -13,15 +13,16 @@ env:
   # Skip uploading to GitHub Release on public repo.
   SKIP_UPLOADING_RELEASE_ASSET: ${{ secrets.SKIP_UPLOADING_RELEASE_ASSET || '1' }}
 jobs:
+  download_and_deploy_cuda:
+
   download_and_deploy_directml:
     strategy:
       matrix:
         include:
           - platform: x64-win
-
+            directml_version: 1.9.0
     runs-on: ubuntu-latest
     env:
-      DIRECTML_VERSION: 1.9.0
       ASSET_NAME: DirectML-${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
@@ -33,12 +34,12 @@ jobs:
       - name: Download DirectML
         shell: bash
         run: |
-          directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ env.DIRECTML_VERSION }}/microsoft.ai.directml.${{ env.DIRECTML_VERSION }}.nupkg"
+          directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ matrix.directml_version }}/microsoft.ai.directml.${{ matrix.directml_version }}.nupkg"
           curl -sSLO $directml_link
       - name: Extract DirectML
         shell: bash
         run: |
-          unzip -d ext_directml microsoft.ai.directml.${{ env.DIRECTML_VERSION }}.nupkg
+          unzip -d ext_directml microsoft.ai.directml.${{ matrix.directml_version }}.nupkg
           cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
           cp -v "ext_directml/LICENSE.txt" "artifact/${{ env.ASSET_NAME }}/DirectML_LICENSE.txt"
       - name: Upload DirectML
