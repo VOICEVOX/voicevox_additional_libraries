@@ -18,6 +18,7 @@ jobs:
   download_and_deploy_cuda:
     strategy:
       matrix:
+        cuda_version: ["11.6.0"]
         include:
           - os: windows-latest
             artifact_name: windows-x64
@@ -27,7 +28,6 @@ jobs:
             cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive.tar.xz
     env:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
-      CUDA_VERSION: ${{ matrix.cuda_version || '11.6.0' }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -40,7 +40,7 @@ jobs:
         with:
           cudnn_download_url: ${{ matrix.cudnn_download_url }}
           asset_name: ${{ env.ASSET_NAME }}
-          cuda_version: ${{ env.CUDA_VERSION }}
+          cuda_version: ${{ matrix.cuda_version }}
           extract_dir: artifact/${{ env.ASSET_NAME }}
       - name: Upload CUDA
         if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
@@ -54,6 +54,7 @@ jobs:
   download_and_deploy_directml:
     strategy:
       matrix:
+        directml_version: ["1.9.0"]
         include:
           - platform: x64-win
             artifact_name: windows-x64
