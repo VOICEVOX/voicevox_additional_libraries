@@ -35,13 +35,13 @@ runs:
         set -eux
         mkdir -p download/cudnn_tmp
         if [[ "${{ runner.os }}" = "Linux" ]]; then
-          curl -L "${{ matrix.cudnn_download_url }}" > download/cudnn.tar.xz
+          curl -L "${{ inputs.cudnn_download_url }}" > download/cudnn.tar.xz
           tar -Jxvf download/cudnn.tar.xz -C download/cudnn_tmp
           mkdir -p download/cudnn_tmp/bin
           # このディレクトリはcudnnのバージョンによって変わってしまうことがあるので注意すること
           mv -v download/cudnn_tmp/**/lib/* download/cudnn_tmp/bin
         elif [[ "${{ runner.os }}" = "Windows" ]];then
-          curl -L "${{ matrix.cudnn_download_url }}" > download/cudnn.zip
+          curl -L "${{ inputs.cudnn_download_url }}" > download/cudnn.zip
           unzip download/cudnn.zip cudnn*/bin/*.dll -d download/cudnn_tmp
           mkdir -p ./download/cudnn_tmp/bin
           # このディレクトリはcudnnのバージョンによって変わってしまうことがあるので注意すること
