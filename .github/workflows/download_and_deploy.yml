@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         cuda_version: ["11.6.0"]
-        include:
+        artifact:
           - os: windows-latest
             artifact_name: windows-x64
             cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive.zip
@@ -27,8 +27,8 @@ jobs:
             artifact_name: linux-x64
             cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive.tar.xz
     env:
-      ASSET_NAME: CUDA-${{ matrix.artifact_name }}
-    runs-on: ${{ matrix.os }}
+      ASSET_NAME: CUDA-${{ matrix.artifact.artifact_name }}
+    runs-on: ${{ matrix.artifact.os }}
     steps:
       - uses: actions/checkout@v3
       - name: Prepare directory
@@ -38,7 +38,7 @@ jobs:
       - name: Organize cuda lib artifact
         uses: ./.github/actions/download-cuda-libraries
         with:
-          cudnn_download_url: ${{ matrix.cudnn_download_url }}
+          cudnn_download_url: ${{ matrix.artifact.cudnn_download_url }}
           asset_name: ${{ env.ASSET_NAME }}
           cuda_version: ${{ matrix.cuda_version }}
           extract_dir: artifact/${{ env.ASSET_NAME }}
@@ -55,12 +55,11 @@ jobs:
     strategy:
       matrix:
         directml_version: ["1.9.0"]
-        include:
+        artifact:
           - platform: x64-win
             artifact_name: windows-x64
     env:
-      ASSET_NAME: DirectML-${{ matrix.artifact_name }}
-      DIRECTML_VERSION: ${{ matrix.directml_version || '1.9.0' }}
+      ASSET_NAME: DirectML-${{ matrix.artifact.artifact_name }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -72,13 +71,13 @@ jobs:
       - name: Download DirectML
         shell: bash
         run: |
-          directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ env.DIRECTML_VERSION }}/microsoft.ai.directml.${{ env.DIRECTML_VERSION }}.nupkg"
+          directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ matrix.directml_version }}/microsoft.ai.directml.${{ matrix.directml_version }}.nupkg"
           curl -sSLO $directml_link
       - name: Extract DirectML
         shell: bash
         run: |
-          unzip -d ext_directml microsoft.ai.directml.${{ env.DIRECTML_VERSION }}.nupkg
-          cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
+          unzip -d ext_directml microsoft.ai.directml.${{ matrix.directml_version }}.nupkg
+          cp -v "ext_directml/bin/${{ matrix.artifact.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
           cp -v "ext_directml/LICENSE.txt" "artifact/${{ env.ASSET_NAME }}/DirectML_LICENSE.txt"
       - name: Upload DirectML
         if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
