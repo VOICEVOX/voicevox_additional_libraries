@@ -14,9 +14,6 @@ env:
   # releaseタグ名か、workflow_dispatchでのバージョン名か、DEBUGが入る
   VERSION: ${{ github.event.release.tag_name || github.event.inputs.version || 'DEBUG' }}
 
-  # Raw character weights are not public.
-  # Skip uploading to GitHub Release on public repo.
-  SKIP_UPLOADING_RELEASE_ASSET: ${{ secrets.SKIP_UPLOADING_RELEASE_ASSET || '1' }}
 jobs:
   download_and_deploy_cuda:
     strategy:
