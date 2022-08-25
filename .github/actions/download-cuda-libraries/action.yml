@@ -2,7 +2,7 @@ name: download cuda libraries
 description: cuda libraryをダウンロードする
 inputs:
   cudnn_download_url:
-    description: cudaのダウンロードURL
+    description: cudnnのダウンロードURL
     required: true
   asset_name:
     description: assetの名前
