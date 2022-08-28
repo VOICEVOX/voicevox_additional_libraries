@@ -1,0 +1,90 @@
+name: download and deploy
+on:
+  push:
+  pull_request:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "バージョン情報（A.BB.C / A.BB.C-preview.D）"
+        required: true
+env:
+  # releaseタグ名か、workflow_dispatchでのバージョン名か、DEBUGが入る
+  VERSION: ${{ github.event.release.tag_name || github.event.inputs.version || 'DEBUG' }}
+
+jobs:
+  download_and_deploy_cuda:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: windows-x64
+            cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive.zip
+            cuda_version: 11.6.0
+          - os: ubuntu-latest
+            artifact_name: linux-x64
+            cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive.tar.xz
+            cuda_version: 11.6.0
+    env:
+      ASSET_NAME: CUDA-${{ matrix.artifact_name }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare directory
+        shell: bash
+        run: |
+          mkdir -p artifact/${{ env.ASSET_NAME }}
+      - name: Organize cuda lib artifact
+        uses: ./.github/actions/download-cuda-libraries
+        with:
+          cudnn_download_url: ${{ matrix.cudnn_download_url }}
+          asset_name: ${{ env.ASSET_NAME }}
+          cuda_version: ${{ matrix.cuda_version }}
+          extract_dir: artifact/${{ env.ASSET_NAME }}
+      - name: Upload CUDA
+        if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
+        uses: ./.github/actions/upload-artifact
+        with:
+          artifact_dir: artifact
+          asset_name: ${{ env.ASSET_NAME }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ env.VERSION }}
+
+  download_and_deploy_directml:
+    strategy:
+      matrix:
+        include:
+          - platform: x64-win
+            artifact_name: windows-x64
+            directml_version: 1.9.0
+    env:
+      ASSET_NAME: DirectML-${{ matrix.artifact_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare directory
+        shell: bash
+        run: |
+          mkdir -p artifact/${{ env.ASSET_NAME }}
+
+      - name: Download DirectML
+        shell: bash
+        run: |
+          directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ matrix.directml_version }}/microsoft.ai.directml.${{ matrix.directml_version }}.nupkg"
+          curl -sSLO $directml_link
+      - name: Extract DirectML
+        shell: bash
+        run: |
+          unzip -d ext_directml microsoft.ai.directml.${{ matrix.directml_version }}.nupkg
+          cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
+          cp -v "ext_directml/LICENSE.txt" "artifact/${{ env.ASSET_NAME }}/DirectML_LICENSE.txt"
+      - name: Upload DirectML
+        if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
+        uses: ./.github/actions/upload-artifact
+        with:
+          artifact_dir: artifact
+          asset_name: ${{ env.ASSET_NAME }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ env.VERSION }}
