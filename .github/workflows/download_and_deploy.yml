@@ -58,7 +58,7 @@ jobs:
         include:
           - platform: x64-win
             artifact_name: windows-x64
-            directml_version: 1.9.0
+            directml_version: 1.10.0
     env:
       ASSET_NAME: DirectML-${{ matrix.artifact_name }}
     runs-on: ubuntu-latest
