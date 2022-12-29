@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             artifact_name: windows-x64
             cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive.zip
             cuda_version: 11.6.0
