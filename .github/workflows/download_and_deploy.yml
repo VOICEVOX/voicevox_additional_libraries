@@ -19,14 +19,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             artifact_name: windows-x64
             cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive.zip
-            cuda_version: 11.6.0
-          - os: ubuntu-latest
+            cuda_version: 11.6.2
+          - os: ubuntu-20.04
             artifact_name: linux-x64
             cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive.tar.xz
-            cuda_version: 11.6.0
+            cuda_version: 11.6.2
     env:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
@@ -58,7 +58,7 @@ jobs:
         include:
           - platform: x64-win
             artifact_name: windows-x64
-            directml_version: 1.9.0
+            directml_version: 1.10.0
     env:
       ASSET_NAME: DirectML-${{ matrix.artifact_name }}
     runs-on: ubuntu-latest
