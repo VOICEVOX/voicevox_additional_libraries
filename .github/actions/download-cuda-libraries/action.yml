@@ -58,6 +58,10 @@ runs:
       with:
         method: network
         cuda: ${{ inputs.cuda_version }}
+        # https://github.com/Jimver/cuda-toolkit/issues/315#issuecomment-2016310157
+        use-github-cache: ${{ runner.os != 'Windows' }}
+        use-local-cache: ${{ runner.os != 'Windows' }}
+
     - name: Extract CUDA Library
       if: steps.cuda-library-cache.outputs.cache-hit != 'true'
       shell: bash
