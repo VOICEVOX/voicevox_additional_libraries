@@ -31,6 +31,7 @@ jobs:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
     steps:
+      # CUDAで容量不足になるので容量削減
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@main
         if: runner.os == 'Linux'
