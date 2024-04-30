@@ -21,16 +21,24 @@ jobs:
         include:
           - os: windows-2022
             artifact_name: windows-x64
-            cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive.zip
-            cuda_version: 11.6.2
+            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-8.9.2.26_cuda12-archive.zip
+            cuda_version: 12.2.2
           - os: ubuntu-20.04
             artifact_name: linux-x64
-            cudnn_download_url: https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive.tar.xz
-            cuda_version: 11.6.2
+            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/cudnn-linux-x86_64-8.9.2.26_cuda12-archive.tar.xz
+            cuda_version: 12.2.2
     env:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
     steps:
+      # CUDAで容量不足になるので容量削減
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@main
+        if: runner.os == 'Linux'
+        with:
+          tool-cache: false
+          large-packages: false
+          swap-storage: false
       - uses: actions/checkout@v3
       - name: Prepare directory
         shell: bash
@@ -44,7 +52,7 @@ jobs:
           cuda_version: ${{ matrix.cuda_version }}
           extract_dir: artifact/${{ env.ASSET_NAME }}
       - name: Upload CUDA
-        if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
+        if: env.VERSION != 'DEBUG'
         uses: ./.github/actions/upload-artifact
         with:
           artifact_dir: artifact
@@ -58,7 +66,7 @@ jobs:
         include:
           - platform: x64-win
             artifact_name: windows-x64
-            directml_version: 1.10.0
+            directml_version: 1.13.1
     env:
       ASSET_NAME: DirectML-${{ matrix.artifact_name }}
     runs-on: ubuntu-latest
@@ -81,7 +89,7 @@ jobs:
           cp -v "ext_directml/bin/${{ matrix.platform }}/DirectML.dll" "artifact/${{ env.ASSET_NAME }}"
           cp -v "ext_directml/LICENSE.txt" "artifact/${{ env.ASSET_NAME }}/DirectML_LICENSE.txt"
       - name: Upload DirectML
-        if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
+        if: env.VERSION != 'DEBUG'
         uses: ./.github/actions/upload-artifact
         with:
           artifact_dir: artifact
