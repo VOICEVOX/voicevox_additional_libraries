@@ -17,13 +17,13 @@ runs:
   using: "composite"
   steps:
     - name: Prepare CUDA cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       id: cuda-library-cache
       with:
         key: v1-cuda-library-cache-${{ inputs.asset_name }}-${{ inputs.cuda_version }}
         path: download/cuda
     - name: Prepare cuDNN cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       id: cudnn-library-cache
       with:
         key: v1-cudnn-library-cache-${{ inputs.asset_name }}-${{ inputs.cudnn_download_url }}
