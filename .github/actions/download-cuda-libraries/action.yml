@@ -17,13 +17,13 @@ runs:
   using: "composite"
   steps:
     - name: Prepare CUDA cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       id: cuda-library-cache
       with:
         key: v1-cuda-library-cache-${{ inputs.asset_name }}-${{ inputs.cuda_version }}
         path: download/cuda
     - name: Prepare cuDNN cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       id: cudnn-library-cache
       with:
         key: v1-cudnn-library-cache-${{ inputs.asset_name }}-${{ inputs.cudnn_download_url }}
@@ -53,7 +53,7 @@ runs:
         rm -f download/cudnn.*
         mkdir -p ${{ inputs.extract_dir }}
         cp -v docs/licenses/cuda/* "${{ inputs.extract_dir }}"
-    - uses: Jimver/cuda-toolkit@v0.2.8
+    - uses: Jimver/cuda-toolkit@v0.2.15
       id: cuda-toolkit
       with:
         method: network
