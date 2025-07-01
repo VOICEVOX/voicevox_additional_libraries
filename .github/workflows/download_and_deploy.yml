@@ -15,7 +15,32 @@ env:
   VERSION: ${{ github.event.release.tag_name || github.event.inputs.version || 'DEBUG' }}
 
 jobs:
+  download_zlib_for_windows_cuda:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          key: zlib-for-windows-cuda-v1.2.3
+          path: zlibwapi.dll
+      # NOTE: CUDAのcudnnに必要
+      # FIXME: ワークアラウンド処理。本当は自分でビルドした方が良い。
+      - name: Download and take zlibwapi.dll
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fLO --retry 3 --retry-delay 5 \
+            https://github.com/VOICEVOX/voicevox_engine/releases/download/0.14.0/voicevox_engine-windows-nvidia-0.14.0.7z.001
+          7z x voicevox_engine-windows-nvidia-0.14.0.7z.001
+          mv windows-nvidia/zlibwapi.dll .
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: zlib-for-windows-cuda
+          path: zlibwapi.dll
+
   download_and_deploy_cuda:
+    needs: [download_zlib_for_windows_cuda]
     strategy:
       matrix:
         include:
@@ -51,6 +76,16 @@ jobs:
           asset_name: ${{ env.ASSET_NAME }}
           cuda_version: ${{ matrix.cuda_version }}
           extract_dir: artifact/${{ env.ASSET_NAME }}
+      - name: Download zlibwapi.dll
+        if: runner.os == 'Windows'
+        uses: actions/download-artifact@v4
+        with:
+          name: zlib-for-windows-cuda
+          path: zlib_for_windows_cuda
+      - name: Include zlibwapi.dll
+        if: runner.os == 'Windows'
+        shell: bash
+        run: mv zlib_for_windows_cuda/zlibwapi.dll artifact/
       - name: Upload CUDA
         if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
         uses: ./.github/actions/upload-artifact
