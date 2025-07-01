@@ -22,7 +22,7 @@ jobs:
         id: cache
         uses: actions/cache@v4
         with:
-          key: zlib-for-windows-cuda
+          key: zlib-for-windows-cuda-v1.2.3
           path: zlibwapi.dll
       # NOTE: CUDAのcudnnに必要
       # FIXME: ワークアラウンド処理。本当は自分でビルドした方が良い。
