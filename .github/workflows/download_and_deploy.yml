@@ -18,7 +18,14 @@ jobs:
   download_zlib_for_windows_cuda:
     runs-on: ubuntu-latest
     steps:
+      - name: Cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          key: zlib-for-windows-cuda
+          path: zlibwapi.dll
       - name: Download and take zlibwapi.dll
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           curl -fLO --retry 3 --retry-delay 5 \
             https://github.com/VOICEVOX/voicevox_engine/releases/download/0.14.0/voicevox_engine-windows-nvidia-0.14.0.7z.001
