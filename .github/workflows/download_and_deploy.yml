@@ -24,6 +24,8 @@ jobs:
         with:
           key: zlib-for-windows-cuda
           path: zlibwapi.dll
+      # NOTE: CUDAのcudnnに必要
+      # FIXME: ワークアラウンド処理。本当は自分でビルドした方が良い。
       - name: Download and take zlibwapi.dll
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -83,7 +85,7 @@ jobs:
       - name: Include zlibwapi.dll
         if: runner.os == 'Windows'
         shell: bash
-        run: zlib_for_windows_cuda/zlibwapi.dll artifact/
+        run: mv zlib_for_windows_cuda/zlibwapi.dll artifact/
       - name: Upload CUDA
         if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
         uses: ./.github/actions/upload-artifact
