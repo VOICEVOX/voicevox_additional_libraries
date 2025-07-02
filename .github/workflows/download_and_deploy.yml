@@ -31,7 +31,7 @@ jobs:
         run: |
           curl -fLO --retry 3 --retry-delay 5 \
             https://github.com/VOICEVOX/voicevox_engine/releases/download/0.14.0/voicevox_engine-windows-nvidia-0.14.0.7z.001
-          7z x voicevox_engine-windows-nvidia-0.14.0.7z.001
+          7z x voicevox_engine-windows-nvidia-0.14.0.7z.001 windows-nvidia/zlibwapi.dll
           mv windows-nvidia/zlibwapi.dll .
       - name: Upload
         uses: actions/upload-artifact@v4
