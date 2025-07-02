@@ -26,7 +26,7 @@ jobs:
           path: zlibwapi.dll
       # NOTE: CUDAのcudnnに必要
       # FIXME: ワークアラウンド処理。本当は自分でビルドした方が良い。
-      - name: Download and take zlibwapi.dll
+      - name: Download and take zlibwapi.dll v1.2.3
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           curl -fLO --retry 3 --retry-delay 5 \
