@@ -85,7 +85,7 @@ jobs:
       - name: Include zlibwapi.dll
         if: runner.os == 'Windows'
         shell: bash
-        run: mv zlib_for_windows_cuda/zlibwapi.dll artifact/
+        run: mv zlib_for_windows_cuda/zlibwapi.dll "artifact/$ASSET_NAME"
       - name: Upload CUDA
         if: ${{ env.VERSION != 'DEBUG' && env.SKIP_UPLOADING_RELEASE_ASSET == '0' }}
         uses: ./.github/actions/upload-artifact
