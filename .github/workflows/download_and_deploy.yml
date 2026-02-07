@@ -39,7 +39,7 @@ jobs:
           tool-cache: false
           large-packages: false
           swap-storage: false
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Prepare directory
         shell: bash
         run: |
@@ -71,7 +71,7 @@ jobs:
       ASSET_NAME: DirectML-${{ matrix.artifact_name }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Prepare directory
         shell: bash
         run: |
