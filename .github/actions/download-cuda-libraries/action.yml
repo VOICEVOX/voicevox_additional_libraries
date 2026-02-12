@@ -51,8 +51,6 @@ runs:
         mv download/cudnn_tmp/bin/*.{so*,dll} download/cudnn/bin/ || true
         rm -rf download/cudnn_tmp
         rm -f download/cudnn.*
-        mkdir -p ${{ inputs.extract_dir }}
-        cp -v docs/licenses/cuda/* "${{ inputs.extract_dir }}"
     - uses: Jimver/cuda-toolkit@v0.2.15
       id: cuda-toolkit
       with:
@@ -70,6 +68,11 @@ runs:
         elif [[ "${{ runner.os }}" = "Windows" ]];then
           cp -v "$CUDA_ROOT/bin/"*.dll download/cuda/bin/
         fi
+    - name: Copy EULA
+      shell: bash
+      run: |
+        mkdir -p ${{ inputs.extract_dir }}
+        cp -v docs/licenses/cuda/* "${{ inputs.extract_dir }}"
     - name: Extract Libraries for Windows
       shell: bash
       if: ${{ runner.os == 'Windows' }}
