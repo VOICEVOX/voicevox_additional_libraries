@@ -52,6 +52,7 @@ runs:
         rm -rf download/cudnn_tmp
         rm -f download/cudnn.*
     - uses: Jimver/cuda-toolkit@v0.2.15
+      if: steps.cuda-library-cache.outputs.cache-hit != 'true'
       id: cuda-toolkit
       with:
         method: network
