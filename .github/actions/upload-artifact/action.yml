@@ -28,7 +28,7 @@ runs:
       run: |
         powershell Compress-Archive -Path "${{ inputs.artifact_dir }}/${{ inputs.asset_name }}" -DestinationPath "${{ inputs.asset_name }}.zip"
     - name: Upload to Release
-      uses: svenstaro/upload-release-action@v2
+      uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # latest
       with:
         repo_token: ${{ inputs.repo_token }}
         prerelease: true
