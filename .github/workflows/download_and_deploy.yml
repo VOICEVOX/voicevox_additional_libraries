@@ -33,7 +33,7 @@ jobs:
     steps:
       # CUDAで容量不足になるので容量削減
       - name: Free Disk Space
-        uses: jlumbroso/free-disk-space@main
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
         if: runner.os == 'Linux'
         with:
           tool-cache: false
