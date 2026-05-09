@@ -2,17 +2,14 @@ name: download and deploy
 on:
   push:
   pull_request:
-  release:
-    types:
-      - published
   workflow_dispatch:
     inputs:
       version:
         description: "バージョン情報（A.BB.C / A.BB.C-preview.D）"
         required: true
 env:
-  # releaseタグ名か、workflow_dispatchでのバージョン名か、DEBUGが入る
-  VERSION: ${{ github.event.release.tag_name || github.event.inputs.version || 'DEBUG' }}
+  # workflow_dispatchでのバージョン名か、DEBUGが入る
+  VERSION: ${{ inputs.version || 'DEBUG' }}
 
 jobs:
   download_and_deploy_cuda:
