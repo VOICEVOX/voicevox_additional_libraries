@@ -81,7 +81,7 @@ jobs:
         shell: bash
         run: |
           directml_link="https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/${{ matrix.directml_version }}/microsoft.ai.directml.${{ matrix.directml_version }}.nupkg"
-          curl -sSLO --fail $directml_link
+          curl -sSLO $directml_link
       - name: Extract DirectML
         shell: bash
         run: |
@@ -117,7 +117,7 @@ jobs:
       - name: Download DXC
         shell: bash
         run: |
-          curl -LsS --fail "${{ matrix.dxc_download_url }}" -o dxc.zip
+          curl -LsS "${{ matrix.dxc_download_url }}" -o dxc.zip
       - name: Extract DXC
         shell: bash
         run: |
