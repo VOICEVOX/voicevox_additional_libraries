@@ -124,9 +124,9 @@ jobs:
           unzip -d ext_dxc dxc.zip
           cp -v "ext_dxc/bin/${{ matrix.platform }}/dxcompiler.dll" "artifact/${{ env.ASSET_NAME }}"
           cp -v "ext_dxc/bin/${{ matrix.platform }}/dxil.dll" "artifact/${{ env.ASSET_NAME }}"
-          cp -v "ext_dxc/LICENSE-LLVM.txt" "artifact/${{ env.ASSET_NAME }}/DXC_LICENSE-LLVM.txt"
-          cp -v "ext_dxc/LICENSE-MIT.txt" "artifact/${{ env.ASSET_NAME }}/DXC_LICENSE-MIT.txt"
-          cp -v "ext_dxc/LICENSE-MS.txt" "artifact/${{ env.ASSET_NAME }}/DXC_LICENSE-MS.txt"
+          cp -v "ext_dxc/LICENSE-LLVM.txt" "artifact/${{ env.ASSET_NAME }}/LICENSE-LLVM.txt"
+          cp -v "ext_dxc/LICENSE-MIT.txt" "artifact/${{ env.ASSET_NAME }}/LICENSE-MIT.txt"
+          cp -v "ext_dxc/LICENSE-MS.txt" "artifact/${{ env.ASSET_NAME }}/LICENSE-MS.txt"
       - name: Upload WebGPU
         if: env.VERSION != 'DEBUG'
         uses: ./.github/actions/upload-artifact
