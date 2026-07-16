@@ -13,4 +13,4 @@ DirectML のバージョンはリリースノートか、「Microsoft.AI.DirectM
 
 ## デプロイ方法
 
-Release を作成するか、`download_and_deploy.yml`を workflow_dispatch で実行します。
+`download_and_deploy.yml`を workflow_dispatch で実行します。
