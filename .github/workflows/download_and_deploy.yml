@@ -30,6 +30,8 @@ jobs:
     env:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     steps:
       # CUDAで容量不足になるので容量削減
       - name: Free Disk Space
@@ -70,6 +72,8 @@ jobs:
     env:
       ASSET_NAME: DirectML-${{ matrix.artifact_name }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v6
       - name: Prepare directory
