@@ -18,12 +18,12 @@ jobs:
         include:
           - os: windows-2022
             artifact_name: windows-x64
-            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-8.9.2.26_cuda12-archive.zip
-            cuda_version: 12.2.2
+            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.8.0.87_cuda12-archive.zip
+            cuda_version: 12.8.1
           - os: ubuntu-22.04
             artifact_name: linux-x64
-            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/cudnn-linux-x86_64-8.9.2.26_cuda12-archive.tar.xz
-            cuda_version: 12.2.2
+            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/cudnn-linux-x86_64-9.8.0.87_cuda12-archive.tar.xz
+            cuda_version: 12.8.1
     env:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
@@ -65,7 +65,7 @@ jobs:
         include:
           - platform: x64-win
             artifact_name: windows-x64
-            directml_version: 1.13.1
+            directml_version: 1.15.4
     env:
       ASSET_NAME: DirectML-${{ matrix.artifact_name }}
     runs-on: ubuntu-latest
