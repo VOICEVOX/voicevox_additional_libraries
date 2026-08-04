@@ -2,17 +2,14 @@ name: download and deploy
 on:
   push:
   pull_request:
-  release:
-    types:
-      - published
   workflow_dispatch:
     inputs:
       version:
         description: "バージョン情報（A.BB.C / A.BB.C-preview.D）"
         required: true
 env:
-  # releaseタグ名か、workflow_dispatchでのバージョン名か、DEBUGが入る
-  VERSION: ${{ github.event.release.tag_name || github.event.inputs.version || 'DEBUG' }}
+  # workflow_dispatchでのバージョン名か、DEBUGが入る
+  VERSION: ${{ inputs.version || 'DEBUG' }}
 
 jobs:
   download_and_deploy_cuda:
@@ -21,25 +18,27 @@ jobs:
         include:
           - os: windows-2022
             artifact_name: windows-x64
-            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-8.9.2.26_cuda12-archive.zip
-            cuda_version: 12.2.2
+            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.8.0.87_cuda12-archive.zip
+            cuda_version: 12.8.1
           - os: ubuntu-22.04
             artifact_name: linux-x64
-            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/cudnn-linux-x86_64-8.9.2.26_cuda12-archive.tar.xz
-            cuda_version: 12.2.2
+            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/cudnn-linux-x86_64-9.8.0.87_cuda12-archive.tar.xz
+            cuda_version: 12.8.1
     env:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     steps:
       # CUDAで容量不足になるので容量削減
       - name: Free Disk Space
-        uses: jlumbroso/free-disk-space@main
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
         if: runner.os == 'Linux'
         with:
           tool-cache: false
           large-packages: false
           swap-storage: false
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Prepare directory
         shell: bash
         run: |
@@ -66,12 +65,14 @@ jobs:
         include:
           - platform: x64-win
             artifact_name: windows-x64
-            directml_version: 1.13.1
+            directml_version: 1.15.4
     env:
       ASSET_NAME: DirectML-${{ matrix.artifact_name }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Prepare directory
         shell: bash
         run: |
