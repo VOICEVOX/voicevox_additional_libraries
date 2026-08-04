@@ -4,7 +4,7 @@ CUDA や DirectML、WebGPU など、VOICEVOX を動かすのに必要になる�
 
 ## 依存ライブラリの更新方法
 
-onnxruntime のバージョンに合わせて CUDA・DirectML・cuDNN のバージョンを更新します。
+onnxruntime のバージョンに合わせて CUDA・DirectML・cuDNN・DirectXShaderCompiler のバージョンを更新します。
 現状は`download_and_deploy.yml`ファイルを直接書き換えることで更新しています。
 
 依存する CUDA と cuDNN のバージョンは[ここ](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html#requirements)で確認できます。CUDA のパッチバージョンを知りたい場合は onnxruntime のコード内検索で「cuda メジャーバージョン.マイナーバージョン」辺りで検索するとヒントが見つかります。
