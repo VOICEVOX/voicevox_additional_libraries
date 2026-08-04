@@ -11,7 +11,7 @@ onnxruntime のバージョンに合わせて CUDA・DirectML・cuDNN・DirectXS
 
 DirectML のバージョンはリリースノートか、「Microsoft.AI.DirectML」とコード内検索すれば見つかります。
 
-WebGPU 版で利用する DirectXShaderCompiler は、[DirectXShaderCompiler のリリース](https://github.com/microsoft/DirectXShaderCompiler/releases)から更新します。
+DirectXShaderCompiler のバージョンは、onnxruntime が WebGPU 版のビルドに使う DXC に合わせます。onnxruntime の`cmake/deps.txt`にある dawn のコミットを開き、その`DEPS`の`third_party/dxc`が指すコミットを調べ、[DirectXShaderCompiler のリリース](https://github.com/microsoft/DirectXShaderCompiler/releases)からそのコミット時点で最新のものを選びます。
 
 ## デプロイ方法
 

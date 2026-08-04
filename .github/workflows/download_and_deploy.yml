@@ -104,7 +104,7 @@ jobs:
         include:
           - platform: x64
             artifact_name: windows-x64
-            dxc_download_url: https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.8.2502/dxc_2025_02_20.zip
+            dxc_download_url: https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.8.2505/dxc_2025_05_24.zip
     env:
       ASSET_NAME: WebGPU-${{ matrix.artifact_name }}
     runs-on: ubuntu-latest
