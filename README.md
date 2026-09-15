@@ -1,15 +1,17 @@
 # voicevox_additional_libraries
 
-CUDA や DirectML など、VOICEVOX を動かすのに必要になることがあるライブラリ置き場
+CUDA や DirectML、WebGPU など、VOICEVOX を動かすのに必要になることがあるライブラリ置き場
 
 ## 依存ライブラリの更新方法
 
-onnxruntime のバージョンに合わせて CUDA・DirectML・cuDNN のバージョンを更新します。
+onnxruntime のバージョンに合わせて CUDA・DirectML・cuDNN・DirectXShaderCompiler のバージョンを更新します。
 現状は`download_and_deploy.yml`ファイルを直接書き換えることで更新しています。
 
 依存する CUDA と cuDNN のバージョンは[ここ](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html#requirements)で確認できます。CUDA のパッチバージョンを知りたい場合は onnxruntime のコード内検索で「cuda メジャーバージョン.マイナーバージョン」辺りで検索するとヒントが見つかります。
 
 DirectML のバージョンはリリースノートか、「Microsoft.AI.DirectML」とコード内検索すれば見つかります。
+
+DirectXShaderCompiler のバージョンは、onnxruntime が WebGPU 版のビルドに使う DXC に合わせます。onnxruntime の`cmake/deps.txt`にある dawn のコミットを開き、その`DEPS`の`third_party/dxc`が指すコミットを調べ、[DirectXShaderCompiler のリリース](https://github.com/microsoft/DirectXShaderCompiler/releases)からそのコミット時点で最新のものを選びます。
 
 ## デプロイ方法
 
