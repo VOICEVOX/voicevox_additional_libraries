@@ -17,13 +17,13 @@ runs:
   using: "composite"
   steps:
     - name: Prepare CUDA cache
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: cuda-library-cache
       with:
         key: v1-cuda-library-cache-${{ inputs.asset_name }}-${{ inputs.cuda_version }}
         path: download/cuda
     - name: Prepare cuDNN cache
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: cudnn-library-cache
       with:
         key: v1-cudnn-library-cache-${{ inputs.asset_name }}-${{ inputs.cudnn_download_url }}
@@ -51,7 +51,7 @@ runs:
         mv download/cudnn_tmp/bin/*.{so*,dll} download/cudnn/bin/ || true
         rm -rf download/cudnn_tmp
         rm -f download/cudnn.*
-    - uses: Jimver/cuda-toolkit@3d45d157f327c09c04b50ee6ccdea2d9d017ec76 # v0.2.35
+    - uses: Jimver/cuda-toolkit@b8bf9c6c28f8a92fbb04dcfcaee872e60c57462d # v0.2.36
       if: steps.cuda-library-cache.outputs.cache-hit != 'true'
       id: cuda-toolkit
       with:
