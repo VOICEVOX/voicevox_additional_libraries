@@ -24,6 +24,10 @@ jobs:
             artifact_name: linux-x64
             cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/cudnn-linux-x86_64-9.8.0.87_cuda12-archive.tar.xz
             cuda_version: 12.8.1
+          - os: ubuntu-22.04-arm
+            artifact_name: linux-arm64
+            cudnn_download_url: https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-sbsa/cudnn-linux-sbsa-9.20.0.48_cuda13-archive.tar.xz
+            cuda_version: 13.2.0
     env:
       ASSET_NAME: CUDA-${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
